@@ -17,39 +17,79 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _musicService.playSong(widget.song.url);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await _musicService.playSong(widget.song.url);
+      } catch (e) {
+        _showErrorDialog('Failed to play song: ${e.toString()}');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _musicService.dispose();
+    super.dispose();
+  }
+
+  void _showErrorDialog(String message) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Now Playing')),
-      child: Column(
-        children: [
-          const Icon(CupertinoIcons.music_albums, size: 200),
-          StreamBuilder<Duration>(
-            stream: _musicService.getPositionStream(),
-            builder: (context, snapshot) {
-              final position = snapshot.data ?? Duration.zero;
-              return CupertinoSlider(
-                value: position.inSeconds.toDouble(),
-                min: 0,
-                max: widget.song.duration.inSeconds.toDouble(),
-                onChanged: (value) => _musicService.seek(Duration(seconds: value.toInt())),
-              );
-            },
-          ),
-          StreamBuilder<PlayerState>(
-            stream: _musicService.getPlaybackState(),
-            builder: (context, snapshot) {
-              final isPlaying = snapshot.data?.playing ?? false;
-              return CupertinoButton(
-                child: Icon(isPlaying ? CupertinoIcons.pause : CupertinoIcons.play),
-                onPressed: isPlaying ? _musicService.pause : _musicService.resume,
-              );
-            },
-          ),
-        ],
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(CupertinoIcons.music_albums, size: 200),
+            StreamBuilder<Duration>(
+              stream: _musicService.getPositionStream(),
+              builder: (context, snapshot) {
+                final position = snapshot.data ?? Duration.zero;
+                return CupertinoSlider(
+                  value: position.inSeconds.toDouble(),
+                  min: 0,
+                  max: widget.song.duration.inSeconds > 0
+                      ? widget.song.duration.inSeconds.toDouble()
+                      : 1,
+                  onChanged: (value) {
+                    if (widget.song.duration.inSeconds > 0) {
+                      _musicService.seek(Duration(seconds: value.toInt()));
+                    }
+                  },
+                );
+              },
+            ),
+            StreamBuilder<PlayerState>(
+              stream: _musicService.getPlaybackState(),
+              builder: (context, snapshot) {
+                final isPlaying = snapshot.data?.playing ?? false;
+                return CupertinoButton(
+                  child: Icon(
+                    isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
+                    size: 40,
+                  ),
+                  onPressed: isPlaying ? _musicService.pause : _musicService.resume,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
