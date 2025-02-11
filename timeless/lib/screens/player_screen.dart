@@ -80,7 +80,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
               builder: (context, snapshot) {
                 final isPlaying = snapshot.data?.playing ?? false;
                 return CupertinoButton(
-                  onPressed: isPlaying ? _musicService.pause : _musicService.resume,
+                  onPressed:
+                      isPlaying ? _musicService.pause : _musicService.resume,
                   child: Icon(
                     isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
                     size: 40,
@@ -93,4 +94,38 @@ class _PlayerScreenState extends State<PlayerScreen> {
       ),
     );
   }
+}
+
+class MusicService {
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  Future<void> playSong(String url) async {
+    await _audioPlayer.setUrl(url);
+    _audioPlayer.play();
+  }
+
+  Stream<Duration> getPositionStream() {
+    return _audioPlayer.positionStream;
+  }
+
+  Stream<PlayerState> getPlaybackState() {
+    return _audioPlayer.playerStateStream;
+  }
+
+  Future<void> seek(Duration position) async {
+    await _audioPlayer.seek(position);
+  }
+
+  Future<void> pause() async {
+    await _audioPlayer.pause();
+  }
+
+  Future<void> resume() async {
+    await _audioPlayer.play();
+  }
+
+  void dispose() {
+    _audioPlayer.dispose();
+  }
+
 }

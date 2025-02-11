@@ -5,11 +5,12 @@ allprojects {
     }
 }
 
+
 rootProject.buildDir = "../build"
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
+    if (project.name != "path_provider_android") {
+        project.buildDir = "${rootProject.buildDir}/${project.name}"
+    }
     project.evaluationDependsOn(":app")
 }
 
