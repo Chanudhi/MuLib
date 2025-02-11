@@ -13,17 +13,25 @@ class PlayerScreen extends StatefulWidget {
 
 class _PlayerScreenState extends State<PlayerScreen> {
   final MusicService _musicService = MusicService();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        await _musicService.playSong(widget.song.url);
-      } catch (e) {
-        _showErrorDialog('Failed to play song: ${e.toString()}');
-      }
-    });
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
+    setState(() => _isLoading = true);
+    try {
+      // Use playLocalSong for local files
+      await _musicService.playSong(widget.song.url);
+      print('Playing: ${widget.song.title}');
+    } catch (e) {
+      print('Error playing song: ${e.toString()}');
+      _showErrorDialog('Failed to play song: ${e.toString()}');
+    }
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -53,49 +61,47 @@ class _PlayerScreenState extends State<PlayerScreen> {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Now Playing')),
       child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(CupertinoIcons.music_albums, size: 200),
-            StreamBuilder<Duration>(
-              stream: _musicService.getPositionStream(),
-              builder: (context, snapshot) {
-                final position = snapshot.data ?? Duration.zero;
-                return CupertinoSlider(
-                  value: position.inSeconds.toDouble(),
-                  min: 0,
-                  max: widget.song.duration.inSeconds > 0
-                      ? widget.song.duration.inSeconds.toDouble()
-                      : 1,
-                  onChanged: (value) {
-                    if (widget.song.duration.inSeconds > 0) {
-                      _musicService.seek(Duration(seconds: value.toInt()));
-                    }
-                  },
-                );
-              },
-            ),
-            StreamBuilder<PlayerState>(
-              stream: _musicService.getPlaybackState(),
-              builder: (context, snapshot) {
-                final isPlaying = snapshot.data?.playing ?? false;
-                return CupertinoButton(
-                  onPressed:
-                      isPlaying ? _musicService.pause : _musicService.resume,
-                  child: Icon(
-                    isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
-                    size: 40,
+        child: _isLoading
+            ? const Center(child: CupertinoActivityIndicator())
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(CupertinoIcons.music_albums, size: 200),
+                  StreamBuilder<Duration>(
+                    stream: _musicService.getPositionStream(),
+                    builder: (context, snapshot) {
+                      final position = snapshot.data ?? Duration.zero;
+                      return CupertinoSlider(
+                        value: position.inSeconds.toDouble(),
+                        min: 0,
+                        max: widget.song.duration.inSeconds.toDouble(),
+                        onChanged: (value) {
+                          _musicService.seek(Duration(seconds: value.toInt()));
+                        },
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  StreamBuilder<PlayerState>(
+                    stream: _musicService.getPlaybackState(),
+                    builder: (context, snapshot) {
+                      final isPlaying = snapshot.data?.playing ?? false;
+                      return CupertinoButton(
+                        onPressed: isPlaying
+                            ? _musicService.pause
+                            : _musicService.resume,
+                        child: Icon(
+                          isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
+                          size: 40,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
-
 class MusicService {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
