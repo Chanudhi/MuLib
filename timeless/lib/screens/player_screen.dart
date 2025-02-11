@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 import '../models/song_model.dart';
-import '../services/music_service.dart';
 
 class PlayerScreen extends StatefulWidget {
   final Song song;
