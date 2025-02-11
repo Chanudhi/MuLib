@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "462490746897",
+    "project_id": "timeless-bc328",
+    "storage_bucket": "timeless-bc328.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462490746897:android:832a5c063542c2c6a6b1b0",
+        "android_client_info": {
+          "package_name": "com.example.timeless"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwu7vPhvWycWzsdYDUZzjbvUDasKNyqaA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -80,11 +80,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
               builder: (context, snapshot) {
                 final isPlaying = snapshot.data?.playing ?? false;
                 return CupertinoButton(
+                  onPressed: isPlaying ? _musicService.pause : _musicService.resume,
                   child: Icon(
                     isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
                     size: 40,
                   ),
-                  onPressed: isPlaying ? _musicService.pause : _musicService.resume,
                 );
               },
             ),
