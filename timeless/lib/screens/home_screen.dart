@@ -6,12 +6,56 @@ class HomeScreen extends StatelessWidget {
   final List<Song> songs = [
     Song(
       id: '1',
-      title: 'Sample Song 1',
-      artist: 'Artist 1',
-      url: 'https://example.com/song1.mp3',
+      title: 'Cold Heart',
+      artist: 'Beakhyun',
+      url: '..assests/Cold Heart.mp3',
+      duration: const Duration(minutes: 3, seconds: 45),
+    ),
+    Song(
+      id: '2',
+      title: 'Boom Boom Bass',
+      artist: 'RIIZE',
+      url: '..assests/Boom Boom Bass.mp3',
+      duration: const Duration(minutes: 4, seconds: 10),
+    ),  
+    Song(
+      id: '3',
+      title: 'Clover',
+      artist: 'Chanyeol',
+      url: '..assests/Clover.mp3',
       duration: const Duration(minutes: 3, seconds: 30),
     ),
-    // Add more songs
+    Song( 
+      id: '4',
+      title: 'Designer',
+      artist: 'NCT 127',
+      url: '..assests/Designer.mp3',
+      duration: const Duration(minutes: 3, seconds: 55),
+    ),
+    Song(
+      id: '5',
+      title: 'Drunk Dazed',
+      artist: 'ENHYPEN',
+      url: '..assests/Drunk Dazed.mp3',
+      duration: const Duration(minutes: 3, seconds: 50),
+    ),
+    Song(id: '6', title: 'Impossible', 
+    artist: 'RIIZE',
+    url: '..assests/Impossible.mp3',
+    duration: const Duration(minutes: 4, seconds: 15),
+    ),
+    Song(id: '7', 
+    title: 'Lucky',
+    artist: 'RIIZE',  
+    url: '..assests/Lucky.mp3', 
+    duration: const Duration(minutes: 3, seconds: 40),
+    ),
+    Song(id: '8',
+    title: 'Time Lapse',  
+    artist: 'NCT 127',  
+    url: '..assests/Time Lapse.mp3',  
+    duration: const Duration(minutes: 3, seconds: 35),
+    )
   ];
 
   HomeScreen({super.key});
