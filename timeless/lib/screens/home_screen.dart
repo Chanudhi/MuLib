@@ -4,6 +4,8 @@ import '../widgets/song_tile.dart';
 import 'player_screen.dart'; // Import PlayerScreen for navigation
 
 class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
+
   final List<Song> songs = [
     Song(
       id: '1',
@@ -18,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       artist: 'RIIZE',
       url: 'assets/Boom Boom Bass.mp3',
       duration: const Duration(minutes: 4, seconds: 10),
-    ),  
+    ),
     Song(
       id: '3',
       title: 'Clover',
@@ -26,7 +28,7 @@ class HomeScreen extends StatelessWidget {
       url: 'assets/Clover.mp3',
       duration: const Duration(minutes: 3, seconds: 30),
     ),
-    Song( 
+    Song(
       id: '4',
       title: 'Designer',
       artist: 'NCT 127',
@@ -41,50 +43,50 @@ class HomeScreen extends StatelessWidget {
       duration: const Duration(minutes: 3, seconds: 50),
     ),
     Song(
-      id: '6', 
-      title: 'Impossible', 
+      id: '6',
+      title: 'Impossible',
       artist: 'RIIZE',
       url: 'assets/Impossible.mp3',
       duration: const Duration(minutes: 4, seconds: 15),
     ),
     Song(
-      id: '7', 
+      id: '7',
       title: 'Lucky',
-      artist: 'RIIZE',  
-      url: 'assets/Lucky.mp3', 
+      artist: 'RIIZE',
+      url: 'assets/Lucky.mp3',
       duration: const Duration(minutes: 3, seconds: 40),
     ),
     Song(
       id: '8',
-      title: 'Time Lapse',  
-      artist: 'NCT 127',  
-      url: 'assets/Time Lapse.mp3',  
+      title: 'Time Lapse',
+      artist: 'NCT 127',
+      url: 'assets/Time Lapse.mp3',
       duration: const Duration(minutes: 3, seconds: 35),
-    )
+    ),
   ];
-
-  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(middle: Text('Library')),
-      child: ListView.builder(
-        itemCount: songs.length,
-        itemBuilder: (context, index) {
-          final song = songs[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => PlayerScreen(song: song),
-                ),
-              );
-            },
-            child: SongTile(song: song),
-          );
-        },
+      child: SafeArea(
+        child: ListView.builder(
+          itemCount: songs.length,
+          itemBuilder: (context, index) {
+            final song = songs[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => PlayerScreen(song: song),
+                  ),
+                );
+              },
+              child: SongTile(song: song),
+            );
+          },
+        ),
       ),
     );
   }

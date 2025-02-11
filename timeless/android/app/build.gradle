@@ -53,7 +53,7 @@ dependencies {
   implementation 'com.google.firebase:firebase-analytics'
 
 implementation 'com.google.firebase:firebase-firestore'
-
+    classpath 'com.android.tools.build:gradle:8.2.2'
   // Add the dependencies for any other desired Firebase products
   // https://firebase.google.com/docs/android/setup#available-libraries
 }

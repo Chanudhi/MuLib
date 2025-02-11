@@ -18,28 +18,28 @@ class Song {
   // For Firebase data parsing
   factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-      id: json['id'],
-      title: json['title'],
-      artist: json['artist'],
-      url: json['url'],
-      duration: Duration(seconds: json['duration']),
+      id: json['id'] ?? '',
+      title: json['title'] ?? 'Unknown Title',
+      artist: json['artist'] ?? 'Unknown Artist',
+      url: json['url'] ?? '',
+      duration: Duration(seconds: (json['duration'] ?? 0).toInt()), // Ensure integer type
       isLocal: json['isLocal'] ?? false, // Handle missing field gracefully
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'artist': artist,
-        'url': url,
-        'duration': duration.inSeconds,
-        'isLocal': isLocal,
-      };
+    'id': id,
+    'title': title,
+    'artist': artist,
+    'url': url,
+    'duration': duration.inSeconds,
+    'isLocal': isLocal,
+  };
 
   // Factory constructor for local asset songs
   factory Song.fromAsset(String fileName, String title, String artist, Duration duration) {
     return Song(
-      id: fileName.replaceAll('.mp3', ''), // Generate ID from filename
+      id: fileName.split('.').first, // Extract filename without extension
       title: title,
       artist: artist,
       url: 'assets/$fileName', // Reference the local asset
@@ -60,4 +60,3 @@ List<Song> localSongs = [
   Song.fromAsset('Lucky.mp3', 'Lucky', 'Artist Name', Duration(minutes: 3, seconds: 40)),
   Song.fromAsset('Time Lapse.mp3', 'Time Lapse', 'Artist Name', Duration(minutes: 4, seconds: 5)),
 ];
-

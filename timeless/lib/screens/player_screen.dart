@@ -23,7 +23,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Future<void> _initializePlayer() async {
     setState(() => _isLoading = true);
     try {
-      // Use playLocalSong for local files
       await _musicService.playSong(widget.song.url);
       print('Playing: ${widget.song.title}');
     } catch (e) {
@@ -35,6 +34,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   @override
   void dispose() {
+    _musicService.stop(); // Stop playback before disposing
     _musicService.dispose();
     super.dispose();
   }
@@ -58,55 +58,64 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Now Playing')),
+      navigationBar: CupertinoNavigationBar(middle: Text(widget.song.title)),
       child: SafeArea(
         child: _isLoading
             ? const Center(child: CupertinoActivityIndicator())
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(CupertinoIcons.music_albums, size: 200),
-                  StreamBuilder<Duration>(
-                    stream: _musicService.getPositionStream(),
-                    builder: (context, snapshot) {
-                      final position = snapshot.data ?? Duration.zero;
-                      return CupertinoSlider(
-                        value: position.inSeconds.toDouble(),
-                        min: 0,
-                        max: widget.song.duration.inSeconds.toDouble(),
-                        onChanged: (value) {
-                          _musicService.seek(Duration(seconds: value.toInt()));
-                        },
-                      );
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(CupertinoIcons.music_albums, size: 200),
+            const SizedBox(height: 10),
+            Text(widget.song.title, style: const TextStyle(fontSize: 20)),
+            Expanded(
+              child: StreamBuilder<Duration>(
+                stream: _musicService.getPositionStream(),
+                builder: (context, snapshot) {
+                  final position = snapshot.data ?? Duration.zero;
+                  return CupertinoSlider(
+                    value: position.inSeconds.toDouble(),
+                    min: 0,
+                    max: widget.song.duration.inSeconds.toDouble(),
+                    onChanged: (value) {
+                      _musicService.seek(Duration(seconds: value.toInt()));
                     },
-                  ),
-                  StreamBuilder<PlayerState>(
-                    stream: _musicService.getPlaybackState(),
-                    builder: (context, snapshot) {
-                      final isPlaying = snapshot.data?.playing ?? false;
-                      return CupertinoButton(
-                        onPressed: isPlaying
-                            ? _musicService.pause
-                            : _musicService.resume,
-                        child: Icon(
-                          isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
-                          size: 40,
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
+            ),
+            StreamBuilder<PlayerState>(
+              stream: _musicService.getPlaybackState(),
+              builder: (context, snapshot) {
+                final isPlaying = snapshot.data?.playing ?? false;
+                return CupertinoButton(
+                  onPressed: isPlaying
+                      ? _musicService.pause
+                      : _musicService.resume,
+                  child: Icon(
+                    isPlaying ? CupertinoIcons.pause : CupertinoIcons.play,
+                    size: 40,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
 class MusicService {
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   Future<void> playSong(String url) async {
-    await _audioPlayer.setUrl(url);
-    _audioPlayer.play();
+    try {
+      await _audioPlayer.setUrl(url);
+      await _audioPlayer.play();
+    } catch (e) {
+      print('Error initializing player: ${e.toString()}');
+    }
   }
 
   Stream<Duration> getPositionStream() {
@@ -129,8 +138,11 @@ class MusicService {
     await _audioPlayer.play();
   }
 
+  Future<void> stop() async {
+    await _audioPlayer.stop();
+  }
+
   void dispose() {
     _audioPlayer.dispose();
   }
-
 }
